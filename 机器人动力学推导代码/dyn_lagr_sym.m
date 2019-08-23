@@ -1,4 +1,4 @@
-```c
+
 function [D,H,G,fv,fc]=dyn_lagr_sym(dhtable)
 %此函数用拉格朗日动力学方法求解机器人动力学
 %求解均使用符号表达，目前只考虑旋转关节,不考虑电机的影响
@@ -152,4 +152,4 @@ I_temp=-I+diag([k,k,k]);
 J=[I_temp m*r;
     m*r' m];
 end
-```
+
