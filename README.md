@@ -24,3 +24,6 @@
   ***
   ---
 
+ > 没有使用过的同学可以先阅读一下：
+
+  https://www.runoob.com/w3cnote/git-guide.html
