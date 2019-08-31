@@ -1,13 +1,13 @@
 %轨迹算法验证
 
-%% jtracj验证
+%% tracj_5验证
 %特定点验证
 % q0=[0 0 0 0 0 0];
 % qf=[1 1 1 1 1 1];
 % [q1,qd1,qdd1]=jtraj(q0,qf,50);
-% [q2,qd2,qdd2]=Jtraj_h(q0,qf,50);
+% [q2,qd2,qdd2]=traj_5(q0,qf,50);
 % t=0:0.01:0.49;
-% [q2,qd2,qdd2]=Jtraj_h(q0,qf,t);
+% [q2,qd2,qdd2]=traj_5(q0,qf,t);
 
 % q0=[1 0.4 3 1 0.8 2];
 % qf=[0 3 2.3 1.2 2.2 3];
@@ -25,7 +25,7 @@
 % q0=[0 2 5 3 4 6 0]';
 % td=[2,4,2,1,3,6]';
 % qm=2;
-% [q,qd,qdd]=jtraj_par(q0,td,qm);
+% [q,qd,qdd]=traj_par(q0,td,qm);
 
 %% function T=tracj_l(T0,Tg,t)
 % mdl_puma560;
@@ -75,23 +75,23 @@
 %     hold on;
 % end
 %指定初始位姿绘图
-p1=[0 0.5 1.3]';
-p2=[0.7 0.3 1  ]';
-p3=[0.6 0.7 0.8]';
-p0=[ 0 0 0]';
-n=nor_vec_p(p1,p2,p3);
-z0=(p1-p0)/norm(p1-p0);
-p1p2=p2-p1;
-x0=cross(p1p2,z0)/norm(cross(p1p2,z0));
-y0=cross(z0,x0);
-R=[x0 y0 z0];
-T1=circle_pose2(p1,p2,p3,p0,50,R);
-for i=1:50
-    plot(SE3(T1{i}),'r')
-    hold on;
-end
-hold on;
-plot3(p0(1),p0(1),p0(2),'r*');
+% p1=[0 0.5 1.3]';
+% p2=[0.7 0.3 1  ]';
+% p3=[0.6 0.7 0.8]';
+% p0=[ 0 0 0]';
+% n=nor_vec_p(p1,p2,p3);
+% z0=(p1-p0)/norm(p1-p0);
+% p1p2=p2-p1;
+% x0=cross(p1p2,z0)/norm(cross(p1p2,z0));
+% y0=cross(z0,x0);
+% R=[x0 y0 z0];
+% T1=circle_pose2(p1,p2,p3,p0,50,R);
+% for i=1:50
+%     plot(SE3(T1{i}),'r')
+%     hold on;
+% end
+% hold on;
+% plot3(p0(1),p0(1),p0(2),'r*');
 %%  function [q,qd,qdd]=tracj_t(q0,qf,tf,T,qm)
 % q0=[0 0 0 0 0 0];
 % qf=[1 2 3 4 5 6];

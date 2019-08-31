@@ -1,90 +1,90 @@
 function Tor=idyna_nr_dh(robot,q,qd,qdd,gravity,f_end)
-%基于DH模型下牛顿欧拉迭代算法的机器人逆动力学求解
-%目前只支持数字解
+%����DHģ����ţ��ŷ�������㷨�Ļ������涯��ѧ���
+%Ŀǰֻ֧�����ֽ�
 %Tor=idyna_nr_dh(robot,q,qd,qdd,gravity,f_end)
-%输入robot为机器人模型，包含有运动学参数和动力学参数
-%输入q为关节角度（1XN），qd为关节角加速度,qdd为对应关节角加速度
-%gravity为重力加速度，f_end为末端执行器施加载荷，
-%这两个在不输入时会选用默认值
-%输出Torque为关节扭矩
-%函数参考了Peter,corke的RTB中的rne函数
-%参考书籍为机器人学：建模规划与控制7.6节
-%% 设置和获取基本参数
-%确保输入角度，角速度，角加速度为行向量
+%����robotΪ������ģ�ͣ��������˶�ѧ�����Ͷ���ѧ����
+%����qΪ�ؽڽǶȣ�1XN����qdΪ�ؽڽǼ��ٶ�,qddΪ��Ӧ�ؽڽǼ��ٶ�
+%gravityΪ�������ٶȣ�f_endΪĩ��ִ����ʩ���غɣ�
+%�������ڲ�����ʱ��ѡ��Ĭ��ֵ
+%���TorqueΪ�ؽ�Ť��
+%�����ο���Peter,corke��RTB�е�rne����
+%�ο��鼮Ϊ������ѧ����ģ�滮�����7.6��
+%% ���úͻ�ȡ��������
+%ȷ������Ƕȣ����ٶȣ��Ǽ��ٶ�Ϊ������
 q=q(:)';
 qd=qd(:)';
 qdd=qdd(:)';
-n=robot.n; %机器人连杆数目
-z0=[0,0,1]'; %基坐标系，z0的方向
-grav= robot.gravity; %重力加速度，可以设置
-fend = zeros(6, 1);%末端施加的载荷,W=[fx Fy Fz Mx My Mz]';
-debug1=0;%设置调试参数
+n=robot.n; %������������Ŀ
+z0=[0,0,1]'; %������ϵ��z0�ķ���
+grav= robot.gravity; %�������ٶȣ���������
+fend = zeros(6, 1);%ĩ��ʩ�ӵ��غ�,W=[fx Fy Fz Mx My Mz]';
+debug1=0;%���õ��Բ���
 debug2=0;
-if nargin>4%判断是否输入重力加速度
+if nargin>4%�ж��Ƿ������������ٶ�
     grav=gravity;
 end
-if nargin==6%判断外部是否施加载荷
+if nargin==6%�ж��ⲿ�Ƿ�ʩ���غ�
     fend=f_end;
 end
-%% 判断输入是否符合要求
+%% �ж������Ƿ����Ҫ��
 if numcols(q)~=n||numcols(qd)~=n||numcols(qd)~=n||numrows(q)~=1||...
         numrows(qd)~=1||numrows(qdd)~= 1||length(fend)~=6
-    error('输入数据有误')
+    error('������������')
 end
-%% 求解 
-%求解相关矩阵和参数
+%% ��� 
+%�����ؾ���Ͳ���
 R={};
 
 for i=1:n
-    link=robot.links(i);%获取连杆（结构体）
-    Ti=link.A(q(i));%获取相邻连杆之间的变换矩阵
-    switch link.type %根据连杆类型来获取连杆长度d的值
+    link=robot.links(i);%��ȡ���ˣ��ṹ�壩
+    Ti=link.A(q(i));%��ȡ��������֮��ı任����
+    switch link.type %����������������ȡ���˳���d��ֵ
         case 'R'
             d = link.d;
         case 'P'
             d = q(i);
     end
-    alpha=link.alpha;%获取连杆扭角
-    r_rela=[link.a; d*sin(alpha); d*cos(alpha)];%获取连杆坐标系i+1相对于连杆坐标系i
-    %的相对位置在i+1系中的表示。是否可以获取位置然后直接相减再求变换（R0,i'*(Oi-Oi-1)）
-    r_temp(i,:)=r_rela;%暂存相对位置数据方便后续调用
-    R{i}=Ti.t2r;%存储相邻连杆之间的旋转变换矩阵方便调用
+    alpha=link.alpha;%��ȡ����Ť��
+    r_rela=[link.a; d*sin(alpha); d*cos(alpha)];%��ȡ��������ϵi+1�������������ϵi
+    %�����λ����i+1ϵ�еı�ʾ���Ƿ���Ի�ȡλ��Ȼ��ֱ���������任��R0,i'*(Oi-Oi-1)��
+    r_temp(i,:)=r_rela;%�ݴ����λ�����ݷ����������
+    R{i}=Ti.t2r;%�洢��������֮�����ת�任���󷽱����
 end
-%输出值的初始化
+%���ֵ�ĳ�ʼ��
 Tor=zeros(1,n);
-%存储扭矩和加速度
+%�洢Ť�غͼ��ٶ�
 Fm = [];
 Nm = [];
-%部分值的初始化
-Rb = t2r(robot.base)';%获取连杆的base的变换矩阵的旋转部分
-w = Rb*zeros(3,1);%初始化连杆基座角速度 %为啥不直接用zeros(3,1)初始化
-wd = Rb*zeros(3,1);%初始化连杆基座的角加速度%也是同样的问题
-vd = Rb*grav(:);%初始化基座的加速度
-%能否用矩阵对相关数据进行储存
+%����ֵ�ĳ�ʼ��
+Rb = t2r(robot.base)';%��ȡ���˵�base�ı任�������ת����
+w = Rb*zeros(3,1);%��ʼ�����˻������ٶ� %Ϊɶ��ֱ����zeros(3,1)��ʼ��
+wd = Rb*zeros(3,1);%��ʼ�����˻����ĽǼ��ٶ�%Ҳ��ͬ��������
+vd = Rb*grav(:);%��ʼ�������ļ��ٶ�
+%�ܷ��þ����������ݽ��д���
 
 
-%正向递推加求速度，角速度，角加速度
+%������Ƽ����ٶȣ����ٶȣ��Ǽ��ٶ�
 for i=1:n
-    link=robot.links(i);%获取连杆的结构体
-    r_rela=r_temp(i,:)';%获取相邻连杆之间的向量
-    Ri=R{i}';%获取相邻的变换矩阵,记得转置因为要获取的是逆矩阵
-    r=link.r';%质心C相对于连杆坐标系的位置向量,注意为行向量还是列向量
+    link=robot.links(i);%��ȡ���˵Ľṹ��
+    r_rela=r_temp(i,:)';%��ȡ��������֮�������
+    Ri=R{i}';%��ȡ���ڵı任����,�ǵ�ת����ΪҪ��ȡ���������
+    r=link.r';%����C�������������ϵ��λ������,ע��Ϊ����������������
     switch link.type
-        case 'R' %旋转关节
-            %注意角速度角加速度的顺序，因为角加速度会调用之前的角速度
-            wd=Ri*(wd+qdd(i)*z0+qd(i)*cross(w,z0));%求解角加速度 
-            w=Ri*(w+qd(i)*z0); %求解角速度
-            vd=Ri*vd+cross(wd,r_rela)+cross(w,cross(w,r_rela)); %求解加速度
+        case 'R' %��ת�ؽ�
+            %ע����ٶȽǼ��ٶȵ�˳����Ϊ�Ǽ��ٶȻ����֮ǰ�Ľ��ٶ�
+            wd=Ri*(wd+qdd(i)*z0+qd(i)*cross(w,z0));%���Ǽ��ٶ� 
+            w=Ri*(w+qd(i)*z0); %�����ٶ�
+            vd=Ri*vd+cross(wd,r_rela)+cross(w,cross(w,r_rela)); %�����ٶ�
         case 'P'
             wd=Ri*wd;
             w=Ri*w;
             vd=Ri*(vd+qdd(i)*z0)+2*qd(i)*cross(w,Ri*z0)...
                 +cross(wd,r_rela)+cross(w,cross(w,r_rela));
     end
-    vd_cen=vd+cross(wd,r)+cross(w,cross(w,r));%求解质心的加速度
-    F=link.m*vd_cen;%由加速度产生的力
-    N=link.I*wd+cross(w,link.I*w);%由旋转产生的连杆力矩
-    %存储相关数据
+    vd_cen=vd+cross(wd,r)+cross(w,cross(w,r));%������ĵļ��ٶ�
+    F=link.m*vd_cen;%�ɼ��ٶȲ�������
+    N=link.I*wd+cross(w,link.I*w);%����ת��������������
+    %�洢�������
     Fm=[Fm F];
     Nm=[Nm N];
 end
@@ -93,25 +93,25 @@ if debug1==1
     fprintf('Nm:');disp(Nm)
     fprintf('\n');
 end
-%逆推求解关节力
-%获取末端力和力矩
+%�������ؽ���
+%��ȡĩ����������
 f_end=fend(:);
-ff=f_end(1:3);%末端力
-fn=f_end(4:6);%末端力矩
+ff=f_end(1:3);%ĩ����
+fn=f_end(4:6);%ĩ������
 for i=n:-1:1
-    link=robot.links(i);%获取连杆结构体
-    r_rela=r_temp(i,:)';%获取相邻连杆之间的向量
-    r=link.r';%获取质心相对于连杆的参数
-    %获取相邻连杆变换矩阵
+    link=robot.links(i);%��ȡ���˽ṹ��
+    r_rela=r_temp(i,:)';%��ȡ��������֮�������
+    r=link.r';%��ȡ������������˵Ĳ���
+    %��ȡ�������˱任����
     if i==n
-        Ri=eye(3);%i=n时,对应的连杆矩阵为Rn,n,其为单位阵
+        Ri=eye(3);%i=nʱ,��Ӧ�����˾���ΪRn,n,��Ϊ��λ��
     else
-        Ri=R{i+1};%i<n时,对应的连杆矩阵为Rn,n+1
+        Ri=R{i+1};%i<nʱ,��Ӧ�����˾���ΪRn,n+1
     end
-    %注意求解顺序
-    %fn=cross(r_rela+r,Fm(:,i))+Ri*(fn+cross(Ri'*r_rela,ff))+Nm(:,i);%计算关节输出力矩
-    fn=cross(r_rela+r,Fm(:,i))+Ri*(fn)+cross(r_rela,Ri*ff)+Nm(:,i);%计算关节输出力矩
-    ff=Ri*ff+Fm(:,i);%计算关节输出力
+    %ע�����˳��
+    %fn=cross(r_rela+r,Fm(:,i))+Ri*(fn+cross(Ri'*r_rela,ff))+Nm(:,i);%����ؽ��������
+    fn=cross(r_rela+r,Fm(:,i))+Ri*(fn)+cross(r_rela,Ri*ff)+Nm(:,i);%����ؽ��������
+    ff=Ri*ff+Fm(:,i);%����ؽ������
     if debug2==1
     fprintf('ff:');disp(ff)
     fprintf('fn:');disp(fn)
@@ -119,19 +119,18 @@ for i=n:-1:1
     end
     Ri=R{i};
     switch link.type
-        %为什么需要乘R？？因为关节i和坐标系i-1对应
+        %Ϊʲô��Ҫ��R������Ϊ�ؽ�i������ϵi-1��Ӧ
         case 'R'
-            
-            %t=fn'*(Ri'*z0); %验证拉格朗日
-             t=fn'*(Ri'*z0)-link.friction(qd(i))+link.G^2 * link.Jm*qdd(i);%关节力矩
-            %并没有考虑到电机自身转速与连杆转速的相互影响,且只考虑粘滞摩擦，后续可以添加
+%             t=fn'*(Ri'*z0); %��֤��������
+            t=fn'*(Ri'*z0)-link.friction(qd(i))+link.G^2 * link.Jm*qdd(i);%�ؽ�����
+            %��û�п��ǵ��������ת��������ת�ٵ��໥Ӱ��,��ֻ����ճ��Ħ����������������
         case 'P'
             t=ff*(Ri'*z0)-link.friction(qd(i))+link.G^2 * link.Jm*qdd(i);
-            %结合旋转关节求解，可知此处求解时电机转速的耦合是需要考虑的
+            %�����ת�ؽ���⣬��֪�˴����ʱ���ת�ٵ��������Ҫ���ǵ�
     end
-    Tor(i)=t;%输出力矩
+    Tor(i)=t;%�������
 end
-    %% 求解基座力
+    %% ��������
     R1 = R{1};
     fn = R1*(fn);
     ff= R1*ff;

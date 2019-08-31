@@ -1,4 +1,4 @@
-function [q,qd,qdd]=Jtraj_h(q0,qf,t,qd0,qdf,qdd0,qddf)
+function [q,qd,qdd]=traj_5(q0,qf,t,qd0,qdf,qdd0,qddf)
 %jtraj函数，能够在q0和qf之间利用五次函数拟合一条轨迹；
 %输入q0和qf为起始和最终关节角度，t为时间序列或者步数
 %qd0和qdf为初始和最终速度，若不给出，则为0

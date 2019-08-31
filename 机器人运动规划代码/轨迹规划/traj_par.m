@@ -1,4 +1,4 @@
-function [q,qd,qdd]=jtraj_par(q0,td,qm)
+function [q,qd,qdd]=traj_par(q0,td,qm)
 %抛物线过渡的线性插值，输入为经由点角度序列q0(MxN)和时间序列t
 %时间为相邻角度值之间的过渡时间,M为点数，N为机器人关节数
 %输出为角度序列q，角速度序列qd，角加速度序列qdd
