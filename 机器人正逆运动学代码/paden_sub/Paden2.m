@@ -27,7 +27,7 @@ x=[theta1 theta10 theta2 theta20];
 for i=1:4
     if x(i)>pi
         x(i)=x(i)-2*pi;
-    elseif x(i)<-pi/2
+    elseif x(i)<-pi
         x(i)=x(i)+2*pi;   
     end
 end

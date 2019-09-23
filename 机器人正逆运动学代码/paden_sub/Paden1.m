@@ -7,6 +7,9 @@ r=twist.pole;
 w=twist.w;
 u=p-r;
 v=q-r;
+% if abs(norm(u)-norm(v))>10^-5
+%     error('该两点无解')
+% end
 u1=u-w*w'*u;
 v1=v-w*w'*v;
 theta=atan2(w'*cross(u1,v1),u1'*v1);
