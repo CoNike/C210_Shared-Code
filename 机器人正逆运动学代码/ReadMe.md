@@ -23,3 +23,5 @@
 8.jaco.m，jacobin0.m,jacobi_screw.m为雅克比矩阵求解的相关算法
 
 9.POE文件夹中为指数积建模的算法和测试文档
+
+10. 加入了DensonV87的C++逆运动学代码。
