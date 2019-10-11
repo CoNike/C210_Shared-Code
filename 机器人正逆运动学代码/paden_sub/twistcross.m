@@ -26,10 +26,10 @@ if isa(twist1,'Twist') && isa(twist2,'Twist')
     r2=r2(:);
 elseif isa(twist1,'double') && isa(twist2,'double') && length(twist1)==6 ...
         && length(twist2)==6
-    w1=twist1(1:3);
+    w1=twist1(1:3)/(norm(twist1(1:3)));
     r1=twist1(4:6);
-    w2=twist2(1:3);
-    r2=twist2(4:6);
+    w2=twist2(1:3)/(norm(twist2(1:3)));
+    r2=twist2(4:6); 
     w1=w1(:);
     r1=r1(:);
     w2=w2(:);

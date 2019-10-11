@@ -32,7 +32,7 @@
 
 %利用XML文件创建机器人对象
 %XML文件的格式参照puma560.xml
-p560x=xml2robot('puma560.xml');
+% p560x=xml2robot('puma560.xml');
 %% 正运动学测试
 % mdl_puma560;
 % p560p=dh2poe(p560);

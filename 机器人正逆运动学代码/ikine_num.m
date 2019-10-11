@@ -48,7 +48,7 @@ while flag
         beta=0.92;
     end
     qi=qi+alpha*temp'*beta;          %求解更新后的角度
-    for i=length(qi)
+    for i=1:length(qi)
         if qi(i)>=pi
             qi(i)=qi(i)-2*pi;
         elseif qi(i)<-pi
