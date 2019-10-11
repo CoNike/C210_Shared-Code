@@ -36,9 +36,11 @@ r_rela= [];%存储相邻连杆之间距离
 w = zeros(3,1);%初始角速度
 wd = zeros(3,1);%初始角加速度
 vd = grav(:);%初始加速度，重力加速度
+T=SE3(0,0,0);
 for i=1
     link=robot.links(i);
     Ti=link.A(q(i));
+    T=T*Ti;
     switch link.type %根据连杆类型来获取连杆长度d的值
         case 'R'
             d = link.d;
@@ -92,8 +94,9 @@ end
 %求解关节力矩
 %获取关节力和力矩
 fend=fend(:);
-ff=fend(1:3);
-fn=fend(4:6);
+R_end=t2r(T)';
+ff=R_end*fend(1:3); %此处乘以变换矩阵的正确性还需要检验
+fn=R_end*fend(4:6);
 for i=n:-1:1
     link=robot.links(i);%获取连杆结构体
     r=link.r;%获取连杆质心位置

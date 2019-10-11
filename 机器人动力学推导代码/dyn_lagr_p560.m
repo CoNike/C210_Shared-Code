@@ -1,4 +1,4 @@
-function tor=dyn_lagr_p560(p560,q,qd,qdd,f_end)
+function tor=dyn_lagr_p560(q,qd,qdd,f_end)
 %该函数是求解puma560机器人动力学
 %该方法是基于拉格朗日动力学得到的相关矩阵
 %% 输入并判断数据是否正确
@@ -7,7 +7,8 @@ qd=qd(:)';
 qdd=qdd(:)';
 n=6; %机器人连杆数目
 fend=zeros(6,1);
-if nargin==5
+if nargin==4
+    f_end=f_end(:);
     fend=f_end;
 end
 if numcols(q)~=n||numcols(qd)~=n||numcols(qd)~=n||numrows(q)~=1||...
@@ -44,10 +45,18 @@ G=[
                                                                                                                                                                  (8829*sin(q2 + q3)*sin(q4)*sin(q5))/312500;
                                                                                                                           - (8829*cos(q2 + q3)*sin(q5))/312500 - (8829*sin(q2 + q3)*cos(q4)*cos(q5))/312500;
                                                                                                                                                                                                           0];
+                                                                                                                                                                                                      
+%jaco
+J=[ (3001*cos(q1))/20000 - (2159*cos(q2)*sin(q1))/5000 + (203*sin(q1)*sin(q2)*sin(q3))/10000 - (203*cos(q2)*cos(q3)*sin(q1))/10000 + (2159*cos(q2)*sin(q1)*sin(q3))/5000 + (2159*cos(q3)*sin(q1)*sin(q2))/5000, -cos(q1)*((2159*cos(q2 + q3))/5000 + (203*sin(q2 + q3))/10000 + (2159*sin(q2))/5000), -cos(q1)*((2159*cos(q2 + q3))/5000 + (203*sin(q2 + q3))/10000),                     0,                                                                               0,                                                                                                                                                       0;
+ (3001*sin(q1))/20000 + (2159*cos(q1)*cos(q2))/5000 + (203*cos(q1)*cos(q2)*cos(q3))/10000 - (2159*cos(q1)*cos(q2)*sin(q3))/5000 - (2159*cos(q1)*cos(q3)*sin(q2))/5000 - (203*cos(q1)*sin(q2)*sin(q3))/10000, -sin(q1)*((2159*cos(q2 + q3))/5000 + (203*sin(q2 + q3))/10000 + (2159*sin(q2))/5000), -sin(q1)*((2159*cos(q2 + q3))/5000 + (203*sin(q2 + q3))/10000),                     0,                                                                               0,                                                                                                                                                       0;
+                                                                                                                                                                                                          0,           (2159*cos(q2))/5000 + (18686333^(1/2)*cos(q2 + q3 + atan(4318/203)))/10000,           (18686333^(1/2)*cos(q2 + q3 + atan(4318/203)))/10000,                     0,                                                                               0,                                                                                                                                                       0;
+                                                                                                                                                                                                          0,                                                                              sin(q1),                                                        sin(q1), -sin(q2 + q3)*cos(q1),   cos(q4)*sin(q1) + sin(q4)*(cos(q1)*cos(q2)*cos(q3) - cos(q1)*sin(q2)*sin(q3)),   sin(q5)*(sin(q1)*sin(q4) - cos(q4)*(cos(q1)*cos(q2)*cos(q3) - cos(q1)*sin(q2)*sin(q3))) - cos(q5)*(cos(q1)*cos(q2)*sin(q3) + cos(q1)*cos(q3)*sin(q2));
+                                                                                                                                                                                                          0,                                                                             -cos(q1),                                                       -cos(q1), -sin(q2 + q3)*sin(q1), - cos(q1)*cos(q4) - sin(q4)*(sin(q1)*sin(q2)*sin(q3) - cos(q2)*cos(q3)*sin(q1)), - sin(q5)*(cos(q1)*sin(q4) - cos(q4)*(sin(q1)*sin(q2)*sin(q3) - cos(q2)*cos(q3)*sin(q1))) - cos(q5)*(cos(q2)*sin(q1)*sin(q3) + cos(q3)*sin(q1)*sin(q2));
+                                                                                                                                                                                                          1,                                                                                    0,                                                              0,          cos(q2 + q3),                                                            sin(q2 + q3)*sin(q4),                                                                                                     cos(q2 + q3)*cos(q5) - sin(q2 + q3)*cos(q4)*sin(q5)]; 
 %% 求解输出
 % fv=fv(:);
 % jm=jm(:); 
-tor=D*qdd'+H*qd'+G+p560.jacob0(q)'*fend;
+tor=D*qdd'+H*qd'+G+J'*fend;
 % tor=D*qdd'+H*qd'+G-fv+jm+p560.jacob0(q)'*fend;
   
 end

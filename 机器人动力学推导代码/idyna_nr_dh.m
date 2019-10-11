@@ -34,10 +34,11 @@ end
 %% 求解 
 %求解相关矩阵和参数
 R={};
-
+T=SE3(0,0,0);
 for i=1:n
     link=robot.links(i);%获取连杆（结构体）
     Ti=link.A(q(i));%获取相邻连杆之间的变换矩阵
+    T=T*Ti;
     switch link.type %根据连杆类型来获取连杆长度d的值
         case 'R'
             d = link.d;
@@ -50,6 +51,7 @@ for i=1:n
     r_temp(i,:)=r_rela;%暂存相对位置数据方便后续调用
     R{i}=Ti.t2r;%存储相邻连杆之间的旋转变换矩阵方便调用
 end
+
 %输出值的初始化
 Tor=zeros(1,n);
 %存储扭矩和加速度
@@ -96,8 +98,10 @@ end
 %逆推求解关节力
 %获取末端力和力矩
 f_end=fend(:);
-ff=f_end(1:3);%末端力
-fn=f_end(4:6);%末端力矩
+%需要将末端力在末端关节坐标系下进行表达，此处Peter书籍似乎存疑。
+R_end=T.t2r';
+ff=R_end*f_end(1:3);%末端力
+fn=R_end*f_end(4:6);%末端力矩
 for i=n:-1:1
     link=robot.links(i);%获取连杆结构体
     r_rela=r_temp(i,:)';%获取相邻连杆之间的向量
@@ -121,8 +125,8 @@ for i=n:-1:1
     switch link.type
         %为什么需要乘R？？因为关节i和坐标系i-1对应
         case 'R'
-%             t=fn'*(Ri'*z0); %验证拉格朗日
-            t=fn'*(Ri'*z0)-link.friction(qd(i))+link.G^2 * link.Jm*qdd(i);%关节力矩
+            t=fn'*(Ri'*z0); %验证拉格朗日
+%             t=fn'*(Ri'*z0)-link.friction(qd(i))+link.G^2 * link.Jm*qdd(i);%关节力矩
             %并没有考虑到电机自身转速与连杆转速的相互影响,且只考虑粘滞摩擦，后续可以添加
         case 'P'
             t=ff*(Ri'*z0)-link.friction(qd(i))+link.G^2 * link.Jm*qdd(i);
