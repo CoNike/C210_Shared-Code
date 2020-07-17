@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manipulator name ='ur5'>
+    <Frame>
+        <base rpy='0 0 0' xyz='0 0 0'/>
+        <JoLink name='JoLink1' w='0 0 1' r='0 0 0' offset='0' qlim='-180 180' qdlim='135' qddlim='120'/>
+        <JoLink name='JoLink2' w='1 0 0' r='0 0 89.2' offset='0' qlim='-180 180' qdlim='135' qddlim='120'/>
+        <JoLink name='JoLink3' w='1 0 0' r='0.0000	0 514.2' offset='0' qlim='-180 180' qdlim='135' qddlim='120'/>
+        <JoLink name='JoLink4' w='1 0 0' r='0 0 906.45' offset='0' qlim='-180 180' qdlim='135' qddlim='120'/>
+        <JoLink name='JoLink5' w='0 0 1' r='110 0 0' offset='0' qlim='-180 180' qdlim='135' qddlim='120'/>
+        <JoLink name='JoLink6' w='1 0 0' r='0 0 1001.2' offset='0' qlim='-180 180' qdlim='135' qddlim='120'/>
+        <tool rpy='0 0 0' xyz='0 0 0'/>
+        <T0 rpy='0   -1.5708   -1.5708' xyz='110 0 1001.2'/>
+    </Frame>
+    <geometry>
+        <Graphics name = 'base' framenumber = '0' stl ="robot/UR5/UR5 - base_1.STL" />
+        <Graphics name = 'shoulder' framenumber = '1' stl ="robot/UR5/UR5 - joint1_1.STL" />
+        <Graphics name = 'upperarm' framenumber = '2' stl ="robot/UR5/UR5 - joint2_1.STL" />
+        <Graphics name = 'upperarm' framenumber = '2' stl ="robot/UR5/UR5 - joint2_2.STL" />
+        <Graphics name = 'upperarm' framenumber = '2' stl ="robot/UR5/UR5 - joint2_3.STL" />
+        <Graphics name = 'forearm' framenumber = '3' stl ="robot/UR5/UR5 - joint3_1.STL" />
+        <Graphics name = 'forearm' framenumber = '3' stl ="robot/UR5/UR5 - joint3_2.STL" />
+        <Graphics name = 'forearm' framenumber = '3' stl ="robot/UR5/UR5 - joint3_3.STL" />
+        <Graphics name = 'forearm' framenumber = '3' stl ="robot/UR5/UR5 - joint3_4.STL" />
+        <Graphics name = 'wrist1' framenumber = '4' stl ="robot/UR5/UR5 - joint4_1.STL" />
+        <Graphics name = 'wrist1' framenumber = '4' stl ="robot/UR5/UR5 - joint4_2.STL" />
+        <Graphics name = 'wrist2' framenumber = '5' stl ="robot/UR5/UR5 - joint5_1.STL" />
+        <Graphics name = 'wrist2' framenumber = '5' stl ="robot/UR5/UR5 - joint5_2.STL" />
+        <Graphics name = 'wrist3' framenumber = '6' stl ="robot/UR5/UR5 - joint6_tool.STL" />
+    </geometry>
+</manipulator>

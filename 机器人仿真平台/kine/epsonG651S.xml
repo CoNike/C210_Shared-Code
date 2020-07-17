@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manipulator name ='epsonG651s'>
+    <Frame>
+        <base rpy='0 0 0' xyz='0 0 0'/>
+        <JoLink name='JoLink1' w='0 0 1' r='0 0 0' offset='0' qlim='-180 180' qdlim='135' qddlim='120'/>
+        <JoLink name='JoLink2' w='0 0 1' r='400 0 0' offset='0' qlim='-180 180' qdlim='135' qddlim='120'/>
+        <JoLink name='JoLink3' w='0 0 1' r='650	0 0' offset='0' qlim='-180 180' qdlim='135' qddlim='120'/>
+        <JoLink name='JoLink4' v='0 0 -1' offset='0' qlim='0 180' qdlim='135' qddlim='120'/>
+       
+        <tool rpy='0 0 0' xyz='0 0 0'/>
+        <T0 rpy='3.1416    3.1416 0' xyz='650 0 300'/>
+    </Frame>
+    <geometry>
+        <Graphics name = 'base' framenumber = '0' stl ="robot/epsonG5651S/GS651S - base_1.STL" />
+        <Graphics name = 'shoulder' framenumber = '1' stl ="robot/epsonG5651S/GS651S - joint1_1.STL" />
+        <Graphics name = 'upperarm' framenumber = '2' stl ="robot/epsonG5651S/GS651S - joint2_1.STL" />
+        <Graphics name = 'wrist1' framenumber = '4' stl ="robot/epsonG5651S/GS651S - joint4_tool.STL" />
+    </geometry>
+</manipulator>
