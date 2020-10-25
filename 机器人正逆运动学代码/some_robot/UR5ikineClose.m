@@ -1,4 +1,4 @@
-
+  
 function q=UR5ikineClose(TG1)
 % ur5 DH²ÎÊý
 %   alphq   a       d           theta 
